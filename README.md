@@ -65,10 +65,10 @@ Le fichier du workflow se trouve dans :
 ##  Structure du projet
 
 anonymiser-transcriptions-teams/
-├── anonymisation.py
-├── logo.ico
-├── requirements.txt
-├── README.md
-└── .github/
-└── workflows/
-└── build-exe.yml
+- anonymisation.py
+- logo.ico
+- requirements.txt
+- README.md
+- .github/
+- workflows/
+- build-exe.yml
