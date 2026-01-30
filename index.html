@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Anonymisation Teams</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f7fa;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+        }
+
+        h2 {
+            color: #3a4f7a;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #c7d3e3;
+            border-radius: 10px;
+            font-size: 15px;
+            resize: vertical;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        textarea:focus {
+            border-color: #6aa5d9;
+            box-shadow: 0 0 6px rgba(106,165,217,0.4);
+        }
+
+        button {
+            padding: 12px 22px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: #6aa5d9; /* bleu clair */
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a94c7;
+        }
+
+        .btn-secondary {
+            background: #b08968; /* marron doux */
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #9a7757;
+        }
+
+        #resultat {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f0e6dd; /* marron très clair */
+            border-left: 6px solid #b08968;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-size: 15px;
+            min-height: 80px;
+        }
+    </style>
+<script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+   
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Outil d'anonymisation Teams</h2>
+
+    <textarea id="texte" placeholder="Collez ici votre transcription Teams..."></textarea>
+
+    <br><br>
+
+    <button class="btn-primary" onclick="anonymiser()">Anonymiser</button>
+    <button class="btn-secondary" onclick="effacer()">Effacer</button>
+    <button class="btn-secondary" onclick="copier()">Copier le résultat</button>
+    <button class="btn-secondary" onclick="telecharger()">Télécharger le résultat</button>
+
+    
+    <div id="resultat"></div>
+</div>
+
+<script>
+function chargerFichier() {
+    const fichier = document.getElementById("fichier").files[0];
+    if (!fichier) return;
+
+    const extension = fichier.name.split('.').pop().toLowerCase();
+
+    if (extension === "txt") {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById("texte").value = e.target.result;
+        };
+        reader.readAsText(fichier);
+    }
+
+    else if (extension === "docx") {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const arrayBuffer = e.target.result;
+
+        mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+            .then(function(result) {
+                document.getElementById("texte").value = result.value;
+            })
+            .catch(function(err) {
+                alert("Erreur lors de la lecture du fichier .docx");
+                console.error(err);
+            });
+    };
+    reader.readAsArrayBuffer(fichier);
+}
+
+    else {
+        alert("Format non supporté.");
+    }
+}
+function telecharger() {
+    const texte = document.getElementById("resultat").innerText;
+
+    if (!texte) {
+        alert("Aucun texte à télécharger.");
+        return;
+    }
+
+    const blob = new Blob([texte], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "texte_anonymise.txt";
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
+async function anonymiser() {
+    const contenu = document.getElementById("texte").value;
+
+    const response = await fetch("http://127.0.0.1:8000/anonymiser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contenu })
+    });
+
+    const data = await response.json();
+    document.getElementById("resultat").innerText = data.texte_anonymise;
+}
+
+function effacer() {
+    document.getElementById("texte").value = "";
+    document.getElementById("resultat").innerText = "";
+}
+
+function copier() {
+    const texte = document.getElementById("resultat").innerText;
+
+    if (!texte) {
+        alert("Aucun texte à copier.");
+        return;
+    }
+
+    navigator.clipboard.writeText(texte)
+        .then(() => {
+            alert("Texte anonymisé copié !");
+        })
+        .catch(() => {
+            alert("Impossible de copier le texte.");
+        });
+}
+</script>
+
+</body>
+</html>
