@@ -1,2 +1,2 @@
 # anonymiser-transcription-Microsoft-teams
-Outil pour anonymiser automatiquement les transcriptions Microsoft Teams avant d'effectuer une synthèse dans un llm, comme Copilot par exemple.
+Outil pour anonymiser automatiquement toutes les transcriptions dont celles issues de Microsoft Teams avant d'effectuer une synthèse dans un llm, comme Copilot par exemple. Les informations personnelles, chiffres, lieux et autres données sensibles ne doivent pas apparaître sur un dossier transmis à un llm pour analyse. Voici un index html répondant à cette attente, téléchargeable gratuitement.  
