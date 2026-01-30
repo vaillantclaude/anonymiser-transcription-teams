@@ -1,7 +1,6 @@
 # 🛡️ Anonymiser toutes les transcriptions avant l'analyse d'un llm
 
-Cet outil permet d’anonymiser automatiquement toutes les transcriptions générées lors de réunion avec Microsoft Teams, Zoom, Google Meet, Slack ou autres, avant analyse d'un llm rédactionnel.
-Il remplace les noms, prénoms et identifiants par des alias anonymes tout en conservant la structure du texte.
+Cet outil permet d’anonymiser automatiquement toutes les transcriptions générées lors de réunion avec Microsoft Teams, Zoom, Google Meet, Slack ou autres. Avant l'analyse d'un llm rédactionnel, il remplace les noms, prénoms et identifiants par des alias anonymes tout en conservant la structure du texte.
 
 Il fonctionne **sans installation**, directement via un fichier `.exe` généré automatiquement par GitHub Actions.
 
