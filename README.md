@@ -20,7 +20,7 @@ La dernière version de l’outil est disponible dans les **Artifacts GitHub Act
    **`anonymisation.exe`**
 
 Vous pouvez également accéder directement à la page des Actions :  
-👉 https://github.com/vaillantclaude/anonymiser-transcriptions-teams/actions
+👉 https://github.com/vaillantclaude/anonymiser-transcription-teams/actions
 
 
 ---
@@ -64,7 +64,7 @@ Le fichier du workflow se trouve dans :
 
 ##  Structure du projet
 
-anonymiser-transcriptions-teams/
+anonymiser-transcription-teams/
 - anonymisation.py
 - logo.ico
 - requirements.txt
