@@ -55,7 +55,7 @@
         }
 
         .btn-primary {
-            background: #6aa5d9; /* bleu clair */
+            background: #6aa5d9;
             color: white;
         }
 
@@ -64,7 +64,7 @@
         }
 
         .btn-secondary {
-            background: #b08968; /* marron doux */
+            background: #b08968;
             color: white;
         }
 
@@ -75,7 +75,7 @@
         #resultat {
             margin-top: 25px;
             padding: 20px;
-            background: #f0e6dd; /* marron très clair */
+            background: #f0e6dd;
             border-left: 6px solid #b08968;
             border-radius: 8px;
             white-space: pre-wrap;
@@ -83,14 +83,18 @@
             min-height: 80px;
         }
     </style>
-<script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
-   
+
+    <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
 </head>
 
 <body>
 
 <div class="container">
     <h2>Outil d'anonymisation Teams</h2>
+
+    <!-- AJOUT DU CHAMP FICHIER -->
+    <input type="file" id="fichier" onchange="chargerFichier()">
+    <br><br>
 
     <textarea id="texte" placeholder="Collez ici votre transcription Teams..."></textarea>
 
@@ -101,7 +105,6 @@
     <button class="btn-secondary" onclick="copier()">Copier le résultat</button>
     <button class="btn-secondary" onclick="telecharger()">Télécharger le résultat</button>
 
-    
     <div id="resultat"></div>
 </div>
 
@@ -121,26 +124,27 @@ function chargerFichier() {
     }
 
     else if (extension === "docx") {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const arrayBuffer = e.target.result;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const arrayBuffer = e.target.result;
 
-        mammoth.extractRawText({ arrayBuffer: arrayBuffer })
-            .then(function(result) {
-                document.getElementById("texte").value = result.value;
-            })
-            .catch(function(err) {
-                alert("Erreur lors de la lecture du fichier .docx");
-                console.error(err);
-            });
-    };
-    reader.readAsArrayBuffer(fichier);
-}
+            mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                .then(function(result) {
+                    document.getElementById("texte").value = result.value;
+                })
+                .catch(function(err) {
+                    alert("Erreur lors de la lecture du fichier .docx");
+                    console.error(err);
+                });
+        };
+        reader.readAsArrayBuffer(fichier);
+    }
 
     else {
-        alert("Format non supporté.");
+        alert("Format non supporté. Utilisez .txt ou .docx");
     }
 }
+
 function telecharger() {
     const texte = document.getElementById("resultat").innerText;
 
