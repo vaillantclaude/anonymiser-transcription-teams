@@ -15,10 +15,7 @@ def anonymiser_transcription(texte, ignorer_deja_anonymise=True):
     # Protection contre double anonymisation
     if ignorer_deja_anonymise:
         if re.search(r'\[(?:ADRESSE|CP|TEL|EMAIL|MONTANT|DATE|HEURE|DOSSIER|IBAN|CB|SECU|SIRET|NOM|PRENOM|VILLE|ENTREPRISE|INITIALES|NOM_COMPLET)\]', texte):
-            print("⚠️  TEXTE DÉJÀ ANONYMISÉ DÉTECTÉ - Aucune modification")
             return texte
-    
-    print("✓ Début de l'anonymisation...")
     
     # 1. DONNÉES STRUCTURÉES
     texte = re.sub(r"\bFR\d{2}[A-Z0-9]{11,30}\b", "[IBAN]", texte)
@@ -169,11 +166,6 @@ def anonymiser_transcription(texte, ignorer_deja_anonymise=True):
         "Chloé", "Maëlle", "Léna", "Inaya", "Lina", "Apolline", "Constance", "Victoire"
     ]
     
-    # Anonymiser d'abord les noms complets avec civilité pour éviter de les casser
-    for prenom in prenoms_courants:
-        # Pattern pour "M. Prénom Nom" - on garde intact pour la règle suivante
-        pass
-    
     # Maintenant anonymiser les prénoms restants (simples, sans civilité)
     for prenom in prenoms_courants:
         texte = re.sub(rf"\b{prenom}\b", "[PRENOM]", texte, flags=re.IGNORECASE)
@@ -187,50 +179,4 @@ def anonymiser_transcription(texte, ignorer_deja_anonymise=True):
     # On exclut les mots en MAJUSCULES qui sont entre crochets
     texte = re.sub(r"(?<!\[)\b[A-Z]{3,15}(?:['-][A-Z]+)*\b(?!\])", "[NOM]", texte)
     
-    print("✓ Anonymisation terminée")
     return texte
-
-
-if __name__ == "__main__":
-    print("="*80)
-    print("TEST 1 : Texte DÉJÀ PARTIELLEMENT ANONYMISÉ")
-    print("="*80)
-    
-    texte_deja_anonymise = """Claude habite au 12 rue de [VILLE], 75015 [VILLE].Il a rendez-vous à 14h30 avec Marie.Son numéro est [TEL].Le dossier 12 doit être traité.Les initiales C.V. sont présentes.Sébastien travaille chez [ENTREPRISE]."""
-    
-    print("\n📝 TEXTE ORIGINAL:")
-    print(texte_deja_anonymise)
-    print("\n🔒 RÉSULTAT AVEC PROTECTION (par défaut):")
-    resultat1 = anonymiser_transcription(texte_deja_anonymise)
-    print(resultat1)
-    
-    print("\n" + "="*80)
-    print("TEST 2 : Même texte SANS PROTECTION (forcer l'anonymisation)")
-    print("="*80)
-    print("\n🔓 RÉSULTAT SANS PROTECTION:")
-    resultat2 = anonymiser_transcription(texte_deja_anonymise, ignorer_deja_anonymise=False)
-    print(resultat2)
-    
-    print("\n" + "="*80)
-    print("TEST 3 : Texte FRAIS (jamais anonymisé)")
-    print("="*80)
-    
-    texte_frais = """claude habite au 12 rue de Paris, 75015 Paris.Il a rendez-vous à 14h30 avec marie et SÉBASTIEN.Son numéro est 06 12 34 56 78.Le dossier 12 doit être traité.Le dossier 12345 est urgent.Les initiales C.V. sont présentes.Sébastien travaille chez Orange.Il habite à Valenciennes."""
-    
-    print("\n📝 TEXTE ORIGINAL:")
-    print(texte_frais)
-    print("\n🔒 RÉSULTAT:")
-    resultat3 = anonymiser_transcription(texte_frais)
-    print(resultat3)
-    
-    print("\n" + "="*80)
-    print("TEST 4 : Test noms longs")
-    print("="*80)
-    
-    texte_noms = """DUPONT a rencontré MARTINEZMENDEZ et CONSTANTINOPOLIS hier."""
-    
-    print("\n📝 TEXTE ORIGINAL:")
-    print(texte_noms)
-    print("\n🔒 RÉSULTAT:")
-    resultat4 = anonymiser_transcription(texte_noms)
-    print(resultat4)
