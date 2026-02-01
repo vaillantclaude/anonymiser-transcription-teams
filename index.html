@@ -2,151 +2,142 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Anonymisation Teams</title>
-
+    <title>Anonymisation de Transcription</title>
     <style>
         body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            background: #f4f7fa;
+            font-family: Arial, sans-serif;
+            background: #e6f4ff; /* bleu ciel */
             margin: 0;
-            padding: 40px;
-            color: #333;
+            padding: 0;
         }
 
-        h2 {
-            color: #3a4f7a;
-            margin-bottom: 20px;
+        header {
+            background: #8b5e3c; /* marron */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
         }
 
         .container {
-            max-width: 900px;
-            margin: auto;
-            background: #ffffff;
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         textarea {
             width: 100%;
             height: 200px;
-            padding: 15px;
-            border: 2px solid #c7d3e3;
-            border-radius: 10px;
-            font-size: 15px;
+            padding: 12px;
+            border: 2px solid #8b5e3c;
+            border-radius: 8px;
+            font-size: 16px;
             resize: vertical;
-            outline: none;
-            transition: 0.2s;
         }
 
-        textarea:focus {
-            border-color: #6aa5d9;
-            box-shadow: 0 0 6px rgba(106,165,217,0.4);
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
         }
 
         button {
-            padding: 12px 22px;
+            flex: 1;
+            padding: 14px;
             font-size: 16px;
+            font-weight: bold;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            margin-right: 10px;
             transition: 0.2s;
         }
 
-        .btn-primary {
-            background: #6aa5d9;
+        .btn-anonymiser {
+            background: #8b5e3c;
             color: white;
         }
-
-        .btn-primary:hover {
-            background: #5a94c7;
+        .btn-anonymiser:hover {
+            background: #6e482f;
         }
 
-        .btn-secondary {
-            background: #b08968;
+        .btn-effacer {
+            background: #bcdfff;
+            color: #333;
+            border: 2px solid #8b5e3c;
+        }
+        .btn-effacer:hover {
+            background: #a7d4ff;
+        }
+
+        .btn-telecharger {
+            background: #8b5e3c;
             color: white;
         }
-
-        .btn-secondary:hover {
-            background: #9a7757;
+        .btn-telecharger:hover {
+            background: #6e482f;
         }
 
-        #resultat {
-            margin-top: 25px;
+        .result {
+            margin-top: 30px;
             padding: 20px;
-            background: #f0e6dd;
-            border-left: 6px solid #b08968;
+            background: #fff7ef;
+            border-left: 6px solid #8b5e3c;
             border-radius: 8px;
+            font-size: 16px;
             white-space: pre-wrap;
-            font-size: 15px;
-            min-height: 80px;
         }
     </style>
-
-    <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
 </head>
 
 <body>
 
+<header>
+    Anonymisation de Transcription
+</header>
+
 <div class="container">
-    <h2>Outil d'anonymisation Teams</h2>
+    <h2>Texte à anonymiser</h2>
+    <textarea id="inputText" placeholder="Collez ici votre transcription..."></textarea>
 
-    <!-- AJOUT DU CHAMP FICHIER -->
-    <input type="file" id="fichier" onchange="chargerFichier()">
-    <br><br>
+    <div class="buttons">
+        <button class="btn-anonymiser" onclick="anonymiser()">Anonymiser</button>
+        <button class="btn-effacer" onclick="effacer()">Effacer</button>
+        <button class="btn-telecharger" onclick="telecharger()">Télécharger</button>
+    </div>
 
-    <textarea id="texte" placeholder="Collez ici votre transcription Teams..."></textarea>
-
-    <br><br>
-
-    <button class="btn-primary" onclick="anonymiser()">Anonymiser</button>
-    <button class="btn-secondary" onclick="effacer()">Effacer</button>
-    <button class="btn-secondary" onclick="copier()">Copier le résultat</button>
-    <button class="btn-secondary" onclick="telecharger()">Télécharger le résultat</button>
-
-    <div id="resultat"></div>
+    <h2>Résultat</h2>
+    <div id="result" class="result"></div>
 </div>
 
 <script>
-function chargerFichier() {
-    const fichier = document.getElementById("fichier").files[0];
-    if (!fichier) return;
+function anonymiser() {
+    const text = document.getElementById("inputText").value;
 
-    const extension = fichier.name.split('.').pop().toLowerCase();
+    fetch("http://127.0.0.1:8000/anonymiser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texte: text })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("result").textContent = data.texte_anonymise;
+    })
+    .catch(error => {
+        document.getElementById("result").textContent = "Erreur : " + error;
+    });
+}
 
-    if (extension === "txt") {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById("texte").value = e.target.result;
-        };
-        reader.readAsText(fichier);
-    }
-
-    else if (extension === "docx") {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const arrayBuffer = e.target.result;
-
-            mammoth.extractRawText({ arrayBuffer: arrayBuffer })
-                .then(function(result) {
-                    document.getElementById("texte").value = result.value;
-                })
-                .catch(function(err) {
-                    alert("Erreur lors de la lecture du fichier .docx");
-                    console.error(err);
-                });
-        };
-        reader.readAsArrayBuffer(fichier);
-    }
-
-    else {
-        alert("Format non supporté. Utilisez .txt ou .docx");
-    }
+function effacer() {
+    document.getElementById("inputText").value = "";
+    document.getElementById("result").textContent = "";
 }
 
 function telecharger() {
-    const texte = document.getElementById("resultat").innerText;
+    const texte = document.getElementById("result").textContent;
 
     if (!texte) {
         alert("Aucun texte à télécharger.");
@@ -162,41 +153,6 @@ function telecharger() {
     a.click();
 
     URL.revokeObjectURL(url);
-}
-
-async function anonymiser() {
-    const contenu = document.getElementById("texte").value;
-
-    const response = await fetch("http://127.0.0.1:8000/anonymiser", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contenu })
-    });
-
-    const data = await response.json();
-    document.getElementById("resultat").innerText = data.texte_anonymise;
-}
-
-function effacer() {
-    document.getElementById("texte").value = "";
-    document.getElementById("resultat").innerText = "";
-}
-
-function copier() {
-    const texte = document.getElementById("resultat").innerText;
-
-    if (!texte) {
-        alert("Aucun texte à copier.");
-        return;
-    }
-
-    navigator.clipboard.writeText(texte)
-        .then(() => {
-            alert("Texte anonymisé copié !");
-        })
-        .catch(() => {
-            alert("Impossible de copier le texte.");
-        });
 }
 </script>
 
