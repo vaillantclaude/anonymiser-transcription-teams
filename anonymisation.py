@@ -54,7 +54,8 @@ def anonymiser_transcription(texte):
     # --- Prénoms automatiques (Claude, Marie, Sébastien, etc.) ---
     texte = re.sub(
         r"\b[A-Z][a-zàâäéèêëïîôöùûüç]{2,}\b",
-        "[PRENOM]", texte
+        "[PRENOM]",
+        texte
     )
 
     # --- Noms en MAJUSCULES ---
