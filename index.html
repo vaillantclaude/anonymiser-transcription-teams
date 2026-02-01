@@ -2,159 +2,34 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Anonymisation de Transcription</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #e6f4ff; /* bleu ciel */
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            background: #8b5e3c; /* marron */
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 26px;
-            font-weight: bold;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        textarea {
-            width: 100%;
-            height: 200px;
-            padding: 12px;
-            border: 2px solid #8b5e3c;
-            border-radius: 8px;
-            font-size: 16px;
-            resize: vertical;
-        }
-
-        .buttons {
-            margin-top: 20px;
-            display: flex;
-            gap: 15px;
-        }
-
-        button {
-            flex: 1;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-anonymiser {
-            background: #8b5e3c;
-            color: white;
-        }
-        .btn-anonymiser:hover {
-            background: #6e482f;
-        }
-
-        .btn-effacer {
-            background: #bcdfff;
-            color: #333;
-            border: 2px solid #8b5e3c;
-        }
-        .btn-effacer:hover {
-            background: #a7d4ff;
-        }
-
-        .btn-telecharger {
-            background: #8b5e3c;
-            color: white;
-        }
-        .btn-telecharger:hover {
-            background: #6e482f;
-        }
-
-        .result {
-            margin-top: 30px;
-            padding: 20px;
-            background: #fff7ef;
-            border-left: 6px solid #8b5e3c;
-            border-radius: 8px;
-            font-size: 16px;
-            white-space: pre-wrap;
-        }
-    </style>
+    <title>Anonymisation</title>
 </head>
-
 <body>
+    <h1>Anonymisation de texte</h1>
 
-<header>
-    Anonymisation de Transcription
-</header>
+    <textarea id="texte" rows="10" cols="80" placeholder="Collez ici votre texte..."></textarea>
+    <br><br>
 
-<div class="container">
-    <h2>Texte à anonymiser</h2>
-    <textarea id="inputText" placeholder="Collez ici votre transcription..."></textarea>
+    <button onclick="anonymiser()">Anonymiser</button>
 
-    <div class="buttons">
-        <button class="btn-anonymiser" onclick="anonymiser()">Anonymiser</button>
-        <button class="btn-effacer" onclick="effacer()">Effacer</button>
-        <button class="btn-telecharger" onclick="telecharger()">Télécharger</button>
-    </div>
+    <h2>Résultat :</h2>
+    <pre id="resultat"></pre>
 
-    <h2>Résultat</h2>
-    <div id="result" class="result"></div>
-</div>
+    <script>
+        async function anonymiser() {
+            const texte = document.getElementById("texte").value;
 
-<script>
-function anonymiser() {
-    const text = document.getElementById("inputText").value;
+            const response = await fetch("http://127.0.0.1:8000/anonymiser", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ contenu: texte })  // <-- CORRECTION ICI
+            });
 
-    fetch("http://127.0.0.1:8000/anonymiser", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texte: text })
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById("result").textContent = data.texte_anonymise;
-    })
-    .catch(error => {
-        document.getElementById("result").textContent = "Erreur : " + error;
-    });
-}
-
-function effacer() {
-    document.getElementById("inputText").value = "";
-    document.getElementById("result").textContent = "";
-}
-
-function telecharger() {
-    const texte = document.getElementById("result").textContent;
-
-    if (!texte) {
-        alert("Aucun texte à télécharger.");
-        return;
-    }
-
-    const blob = new Blob([texte], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "texte_anonymise.txt";
-    a.click();
-
-    URL.revokeObjectURL(url);
-}
-</script>
-
+            const data = await response.json();
+            document.getElementById("resultat").textContent = data.texte_anonymise;
+        }
+    </script>
 </body>
 </html>
