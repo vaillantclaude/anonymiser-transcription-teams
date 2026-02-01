@@ -27,8 +27,8 @@ def anonymiser_transcription(texte, ignorer_deja_anonymise=True):
     texte = re.sub(r"\b\d{3}\s?\d{3}\s?\d{3}\s?\d{5}\b", "[SIRET]", texte)
     
     # 2. TÉLÉPHONES FRANÇAIS
-    texte = re.sub(r"\b\+33[\s.-]?[1-9](?:[\s.-]?\d{2}){4}\b", "[TEL]", texte)
-    texte = re.sub(r"\b\+33[1-9]\d{8}\b", "[TEL]", texte)
+    texte = re.sub(r"\+33[\s.-]?[1-9](?:[\s.-]?\d{2}){4}\b", "[TEL]", texte)
+    texte = re.sub(r"\+33[1-9]\d{8}\b", "[TEL]", texte)
     texte = re.sub(r"\b0[1-9](?:[\s.-]?\d{2}){4}\b", "[TEL]", texte)
     texte = re.sub(r"\b0[1-9]\d{8}\b", "[TEL]", texte)
     
@@ -113,7 +113,7 @@ def anonymiser_transcription(texte, ignorer_deja_anonymise=True):
     texte = re.sub(r"\b(?:[01]?\d|2[0-3])[:h][0-5]\d\b", "[HEURE]", texte)
     
     # 8. MONTANTS
-    texte = re.sub(r"\b\d[\d\s.,]*\s?(?:€|euros?)\b", "[MONTANT]", texte, flags=re.IGNORECASE)
+    texte = re.sub(r"\d+[\d\s.,]*\s?(?:€|euros?)", "[MONTANT]", texte, flags=re.IGNORECASE)
     
     # 9. NUMÉROS DE DOSSIER (minimum 4 chiffres)
     texte = re.sub(
@@ -169,14 +169,21 @@ def anonymiser_transcription(texte, ignorer_deja_anonymise=True):
         "Chloé", "Maëlle", "Léna", "Inaya", "Lina", "Apolline", "Constance", "Victoire"
     ]
     
+    # Anonymiser d'abord les noms complets avec civilité pour éviter de les casser
     for prenom in prenoms_courants:
-        # Détection en minuscules et majuscules
-        texte = re.sub(
-            rf"(?<!M\. )(?<!Mme )(?<!Monsieur )(?<!Madame )\b{prenom}\b(?=\s|[,.]|$)",
-            "[PRENOM]", texte, flags=re.IGNORECASE
-        )
+        # Pattern pour "M. Prénom Nom" - on garde intact pour la règle suivante
+        pass
     
-    # 13. NOMS EN MAJUSCULES (3 à 15 lettres) - MAIS PAS les balises [XXX] déjà anonymisées
+    # Maintenant anonymiser les prénoms restants (simples, sans civilité)
+    for prenom in prenoms_courants:
+        texte = re.sub(rf"\b{prenom}\b", "[PRENOM]", texte, flags=re.IGNORECASE)
+    
+    # 13. NOMS DE FAMILLE en minuscules (2-15 lettres) - après un prénom
+    # Éviter les verbes courants en excluant certains mots
+    mots_a_exclure = r"(?!avec|dans|chez|pour|sans|sous|vers|habite|vit|dit|fait|doit)"
+    texte = re.sub(rf"\[PRENOM\]\s+{mots_a_exclure}([a-z]{{2,15}})\b", r"[PRENOM] [NOM]", texte)
+    
+    # 14. NOMS EN MAJUSCULES (3 à 15 lettres) - MAIS PAS les balises [XXX] déjà anonymisées
     # On exclut les mots en MAJUSCULES qui sont entre crochets
     texte = re.sub(r"(?<!\[)\b[A-Z]{3,15}(?:['-][A-Z]+)*\b(?!\])", "[NOM]", texte)
     
