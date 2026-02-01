@@ -36,8 +36,8 @@ def anonymiser_transcription(texte):
         "[DOSSIER]", texte, flags=re.IGNORECASE
     )
 
-    # --- Initiales ---
-    texte = re.sub(r"\b[A-Z]\.[A-Z]\.\b", "[INITIALES]", texte)
+    # --- Initiales (C.V., M.L., etc.) ---
+    texte = re.sub(r"\b[A-Z]\.[A-Z]\.?", "[INITIALES]", texte)
 
     # --- IBAN, CB, SECU, SIRET ---
     texte = re.sub(r"\bFR\d{2}[A-Z0-9]{11,30}\b", "[IBAN]", texte)
@@ -51,7 +51,7 @@ def anonymiser_transcription(texte):
         "[NOM]", texte
     )
 
-    # --- Prénoms automatiques (Claude, Marie, Sébastien, etc.) ---
+    # --- Prénoms automatiques ---
     texte = re.sub(
         r"\b[A-Z][a-zàâäéèêëïîôöùûüç]{2,}\b",
         "[PRENOM]",
@@ -66,7 +66,7 @@ def anonymiser_transcription(texte):
     for ent in entreprises:
         texte = re.sub(rf"\b{ent}\b", "[ENTREPRISE]", texte, flags=re.IGNORECASE)
 
-    # --- Villes (doit passer APRÈS les adresses) ---
+    # --- Villes ---
     villes = ["Paris", "Lyon", "Marseille", "Toulouse", "Lille", "Bordeaux", "Nice", "Nantes"]
     for ville in villes:
         texte = re.sub(rf"\b{ville}\b", "[VILLE]", texte, flags=re.IGNORECASE)
