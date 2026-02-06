@@ -1,74 +1,80 @@
-# 🛡️ Anonymiser toutes les transcriptions avant l'analyse d'un llm
+# Anonymiser les transcriptions avant analyse LLM
 
-Cet outil permet d’anonymiser automatiquement toutes les transcriptions générées lors de réunion avec Microsoft Teams, Zoom, Google Meet, Slack ou autres. Avant l'analyse d'un llm rédactionnel, il remplace les noms, prénoms et identifiants par des alias anonymes tout en conservant la structure du texte.
+Cet outil permet d’anonymiser automatiquement les transcriptions générées lors de réunions Microsoft Teams, Zoom, Google Meet, Slack ou autres.  
+Avant toute analyse par un modèle rédactionnel, il remplace les noms, prénoms et identifiants par des alias anonymes tout en conservant la structure du texte.
 
-Il fonctionne **sans installation**, directement via un fichier `.exe` généré automatiquement par GitHub Actions.
+L’outil fonctionne **sans installation**, via un fichier `.exe` généré automatiquement par GitHub Actions.
 
 ---
 
-## 📥 Télécharger l’outil
+## Sommaire
+
+- [Téléchargement](#téléchargement)
+- [Utilisation](#utilisation)
+- [Fonctionnement](#fonctionnement)
+- [Génération automatique de lEXE](#génération-automatique-de-lexe)
+- [Structure du projet](#structure-du-projet)
+
+---
+
+## Téléchargement
 
 La dernière version de l’outil est disponible dans les **Artifacts GitHub Actions**.
 
-➡️ **Téléchargement :**  
-1. Cliquez sur l’onglet **Actions** du dépôt  
-2. Sélectionnez le workflow **Build Windows EXE** le plus récent  
-3. Descendez jusqu’à la section **Artifacts**  
-4. Téléchargez le fichier :  
+### Étapes :
+
+1. Ouvrir l’onglet **Actions** du dépôt  
+2. Sélectionner le workflow **Build Windows EXE** le plus récent  
+3. Descendre jusqu’à la section **Artifacts**  
+4. Télécharger le fichier :  
    **`anonymisation-windows.zip`**  
-5. Décompressez le ZIP pour obtenir :  
+5. Décompresser le ZIP pour obtenir :  
    **`anonymisation.exe`**
 
-Vous pouvez également accéder directement à la page des Actions :  
-👉 https://github.com/vaillantclaude/anonymiser-transcription-teams/actions
-
+Accès direct aux Actions :  
+https://github.com/vaillantclaude/anonymiser-transcription-teams/actions
 
 ---
 
-## ▶️ Utilisation
+## Utilisation
 
-1. Téléchargez et décompressez le fichier ZIP  
-2. Double-cliquez sur **`anonymisation.exe`**  
-3. Sélectionnez votre fichier de transcription Teams  
-4. L’outil génère automatiquement une version anonymisée dans le même dossier
+1. Télécharger et décompresser le fichier ZIP  
+2. Lancer **`anonymisation.exe`**  
+3. Sélectionner le fichier de transcription Teams  
+4. Une version anonymisée est générée automatiquement dans le même dossier
 
 Aucune installation n’est nécessaire.  
-L’outil fonctionne sur **Windows**.
+Compatible **Windows**.
 
 ---
 
 ## Fonctionnement
 
 L’outil :
+
 - détecte automatiquement les noms et prénoms dans la transcription  
-- remplace chaque personne par un alias unique (ex : *Personne_1*, *Personne_2*, etc.)  
-- conserve les timestamps, les paragraphes et la structure du fichier  
-- génère un fichier anonymisé prêt à être partagé
+- remplace chaque personne par un alias unique (ex. : `Personne_1`, `Personne_2`, etc.)  
+- conserve les timestamps, paragraphes et structure du fichier  
+- génère un fichier anonymisé prêt à être partagé  
 
 ---
 
 ## Génération automatique de l’EXE
 
-Ce dépôt utilise **GitHub Actions** pour générer automatiquement un exécutable Windows à chaque mise à jour du code.
+Le dépôt utilise **GitHub Actions** pour générer automatiquement un exécutable Windows à chaque mise à jour du code.
 
 Le workflow :
+
 - installe Python  
 - installe PyInstaller  
 - construit un `.exe`  
-- le publie dans les **Artifacts**
+- publie l’exécutable dans les **Artifacts**
 
 Le fichier du workflow se trouve dans :  
 `.github/workflows/build-exe.yml`
 
 ---
 
-##  Structure du projet
+## Structure du projet
 
-anonymiser-transcription-teams/
-- anonymisation.py
-- logo.ico
-- requirements.txt
-- README.md
-- .github/
-- workflows/
-- build-exe.yml
+
