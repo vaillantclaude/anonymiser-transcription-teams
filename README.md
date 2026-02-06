@@ -1,7 +1,7 @@
 <p align="center">
   <img src="banner.png" width="100%" />
 </p>
-# Anonymiser les transcriptions avant analyse LLM
+ Anonymiser les transcriptions avant analyse LLM
 
 Cet outil permet d’anonymiser automatiquement les transcriptions générées lors de réunions Microsoft Teams, Zoom, Google Meet, Slack ou autres.  
 Avant toute analyse par un modèle rédactionnel, il remplace les noms, prénoms et identifiants par des alias anonymes tout en conservant la structure du texte.
